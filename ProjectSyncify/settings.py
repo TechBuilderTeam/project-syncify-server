@@ -52,7 +52,7 @@ MIDDLEWARE = [
 ROOT_URLCONF = 'ProjectSyncify.urls'
 
 CORS_ORIGIN_ALLOW_ALL = True
-CSRF_TRUSTED_ORIGINS = ['https://*.127.0.0.1','https://bloodbankbd.pythonanywhere.com' ]
+CSRF_TRUSTED_ORIGINS = ['https://*.127.0.0.1','https://project-syncify.netlify.app','https://projectsyncifyapi.onrender.com/','http://localhost:5173']
 CORS_ALLOW_ALL_ORIGINS: True
 ALLOWED_HOSTS = ["*"]
 
