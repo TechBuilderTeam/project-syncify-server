@@ -24,3 +24,4 @@ class MemberSerializer(serializers.ModelSerializer):
         model = Member
         fields = ['workspace_Name','id', 'role', 'user']
 
+
