@@ -1,3 +1,4 @@
+import requests
 from google.auth.transport import requests
 from google.oauth2 import id_token
 from accounts.models import User
@@ -9,12 +10,11 @@ class Google():
     @staticmethod
     def validate(access_token):
         try:
-            idinfo = id_token.verify_oauth2_token(access_token, requests.Request(), settings.GOOGLE_CLIENT_ID)
-            if idinfo['iss'] not in ['accounts.google.com', 'https://accounts.google.com']:
-                raise ValueError('Wrong issuer.')
-            return idinfo['sub']
-        except ValueError:
-            raise AuthenticationFailed('Invalid token.')
+            id_info=id_token.verify_oauth2_token(access_token, requests.Request())
+            if 'accounts.google.com' in id_info['iss']:
+                return id_info
+        except:
+            return "the token is either invalid or has expired"
         
 def login_social_user(email,password):
     user=authenticate(email=email,password=password)
@@ -27,14 +27,18 @@ def login_social_user(email,password):
     }
         
 def register_social_user(provider,email,first_name,last_name):
-    user=User.objects.filter(email=email)
-    if user.exists():
-        if provider==user[0].auth_provider:
-            result=login_social_user(email,settings.SOCIAL_AUTH_PASSWORD)
-            return result
+    old_user=User.objects.filter(email=email)
+    if old_user.exists():
+        if provider==old_user[0].auth_provider:
+            register_user=authenticate(email,settings.SOCIAL_AUTH_PASSWORD)
+            return {
+                'full_name':register_user.get_full_name,
+                'email':register_user.email,
+                'tokens':register_user.tokens()
+            }
         else:
             raise AuthenticationFailed(
-                detail=f'Please contineu login with {user[0].auth_provider}'
+                detail=f'Please contineu login with {old_user[0].auth_provider}'
             )
     else:
         new_user={
@@ -44,8 +48,15 @@ def register_social_user(provider,email,first_name,last_name):
             'password':settings.SOCIAL_AUTH_PASSWORD,
             'auth_provider':provider,
         }
-        register_user=User.objects.create_user(**new_user)
-        register_user.is_verified=True
-        register_user.save()
-        result=login_social_user(register_user.email,settings.SOCIAL_AUTH_PASSWORD)
-        return result
+        user=User.objects.create_user(**new_user)
+        user.auth_provider=provider
+        user.is_verified=True
+        user.save()
+        login_user=authenticate(email=email,password=settings.SOCIAL_AUTH_PASSWORD)
+        tokens=login_user.tokens()
+        return {
+            'email':login_user.email,
+            'full_name':login_user.get_full_name,
+            "access_token":str(tokens.get('access')),
+            "refresh_token":str(tokens.get('refresh'))
+        }
