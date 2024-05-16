@@ -3,6 +3,14 @@ from accounts.models import User
 from datetime import timedelta
 # ************ Here is All the Models of the Workspace *********** #
 
+# * ==================== * This is WorkSpeace Model * =========================== * #
+class WorkSpace(models.Model):
+    name = models.CharField(max_length=250)
+    workSpace_manager = models.ForeignKey(User, on_delete=models.CASCADE)
+
+    def __str__(self):
+        return f"WorkSpace Name: {self.name}"
+    
 
 # * ==================== * This is Member Model * =========================== * #
 class roles_choice(models.TextChoices):
@@ -12,22 +20,13 @@ class roles_choice(models.TextChoices):
     MEMBER = "Member"
 
 class Member(models.Model):
+    workspace_Name =  models.ForeignKey(WorkSpace, on_delete=models.CASCADE,null=True)
     role = models.CharField(max_length=100, choices=roles_choice.choices, default=roles_choice.MEMBER)
-    user = models.OneToOneField(User, on_delete=models.CASCADE)
+    user = models.ForeignKey(User, on_delete=models.CASCADE)
 
     def __str__(self):
         return f"Member name :{self.user.first_name} , Member's User ID: {self.user.id}" 
     
-
-
-# * ==================== * This is WorkSpeace Model * =========================== * #
-class WorkSpace(models.Model):
-    name = models.CharField(max_length=250)
-    workSpace_manager = models.ForeignKey(User, on_delete=models.CASCADE)
-
-    def __str__(self):
-        return f"WorkSpace Name: {self.name}"
-
 
 
 # * ==================== * This is TimeLine Model * =========================== * #
