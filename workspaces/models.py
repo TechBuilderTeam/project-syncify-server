@@ -14,7 +14,6 @@ class WorkSpace(models.Model):
 
 # * ==================== * This is Member Model * =========================== * #
 class roles_choice(models.TextChoices):
-    MANAGER = "Manager"
     ASSOCIATE_MANAGER = "Associate Manager"
     TEAM_LEADER = "Team Leader"
     MEMBER = "Member"
