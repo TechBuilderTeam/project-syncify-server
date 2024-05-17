@@ -137,4 +137,29 @@ def task_comments(request, task_id):
     except TaskComment.DoesNotExist:
         return Response({"message": "Task comments not found"}, status=404)
     
+#GET the user role for the workpsace
+@api_view(['GET'])
+def user_position_in_workspace(request, user_id, workspace_id):
+    try:
+        member = Member.objects.get(user_id=user_id, workspace_Name_id=workspace_id)
+        serializer = MemberSerializerForRoleFind(member)
+        return Response(serializer.data)
+    except Member.DoesNotExist:
+        return Response({"message": "Member not found in the specified workspace"}, status=404)
+
+#todo 
+#This wil us only to change the status of a task 
+# @api_view(['PATCH'])
+# def update_task_status(request, task_id):
+#     try:
+#         task = Task.objects.get(id=task_id)
+#     except Task.DoesNotExist:
+#         return Response({"message": "Task not found"}, status=status.HTTP_404_NOT_FOUND)
     
+#     new_status = request.data.get('status')
+#     if new_status not in Task_Status.choices:
+#         return Response({"message": "Invalid status"}, status=status.HTTP_400_BAD_REQUEST)
+    
+#     task.status = new_status
+#     task.save()
+#     return Response({"message": "Status updated successfully"}, status=status.HTTP_200_OK)@api_view(['PATCH'])

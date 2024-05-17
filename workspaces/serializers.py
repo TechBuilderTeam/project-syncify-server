@@ -27,6 +27,13 @@ class MemberSerializer(serializers.ModelSerializer):
         model = Member
         fields = ['workspace_Name','id', 'role', 'user']
 
+class MemberSerializerForRoleFind(serializers.ModelSerializer):
+    user = UserRegisterSerializer
+
+    class Meta: 
+        model = Member
+        fields = ['role']
+
 # * ================ This Serializer is for the Scrum ================ * #
 class ScrumSerializer(serializers.ModelSerializer):
     class Meta:
