@@ -85,3 +85,6 @@ class UserWorkspaces(generics.ListAPIView):
     def get_queryset(self):
         user_id = self.kwargs['user_id']
         return WorkSpace.objects.filter(member__user_id=user_id)
+
+
+        
