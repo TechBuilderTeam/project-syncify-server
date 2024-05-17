@@ -9,6 +9,9 @@ router = routers.DefaultRouter()
 router.register('list' , workSpaceViewSet)
 router.register('member' , MemberViewSet)
 router.register('timeline' , TimelineViewSet)
+router.register('scrum' , scrumViewset)
+router.register('task' , taskViewset)
+router.register('taskcomments' , taskCommentViewset)
 
 urlpatterns = [
     path('', include(router.urls)),
@@ -17,7 +20,10 @@ urlpatterns = [
     path('user/<int:user_id>/workspaces/', UserWorkspaces.as_view(), name='user-workspaces'),
     path('singleworkspace/<int:workspace_id>/members/', WorkspaceMembersList.as_view(), name='workspace-members'), path('workspace/<int:workspace_id>/members/', WorkspaceMembersList.as_view(), name='workspace-members'),
     path('singleworkspace/<int:workspace_id>/timelines/', WorkspaceTimelinesList.as_view(), name='workspace-timelines'),
-
+    path('timeline/<int:timeline_id>/scrums/', timeline_scrums, name='timeline-scrums'),
+    path('scrum/<int:scrum_id>/tasks/', scrum_tasks, name='scrum-tasks'),
+    path('taskcomments/<int:task_id>/comments/', task_comments, name='task-comments'),
+    
 ]
 
 
