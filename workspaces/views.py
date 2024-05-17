@@ -59,11 +59,12 @@ class TimelineViewSet(viewsets.ModelViewSet):
     queryset =  Timeline.objects.all()
     serializer_class = TimeLineSerializer
 
+class WorkspaceTimelinesList(generics.ListAPIView):
+    serializer_class = TimeLineSerializer
 
-#* ============ This the  of the Timeline viewset   ============ *# 
-
-
-
+    def get_queryset(self):
+        workspace_id = self.kwargs['workspace_id']
+        return Timeline.objects.filter(workspace_Name_id=workspace_id)
 
 #* ============ View to check if a user is a member of a specific workspace ============ *# 
 class IsUserMember(APIView):
@@ -84,3 +85,6 @@ class UserWorkspaces(generics.ListAPIView):
     def get_queryset(self):
         user_id = self.kwargs['user_id']
         return WorkSpace.objects.filter(member__user_id=user_id)
+
+
+        
