@@ -9,7 +9,7 @@ from rest_framework.generics import GenericAPIView
 from rest_framework.response import Response
 from rest_framework.permissions import IsAuthenticated
 
-from .serilalizers import UserRegisterSerializer,UserLoginSerializer,PasswordResetRequestSerializer,SetNewPasswordSerializer,LogoutSerializer
+from .serializers import UserRegisterSerializer,UserLoginSerializer,PasswordResetRequestSerializer,SetNewPasswordSerializer,LogoutSerializer
 from .utils import send_otp_to_user
 from .models import OneTimePassword,User
 
