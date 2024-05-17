@@ -7,6 +7,7 @@ from rest_framework.response import Response
 from rest_framework import status,generics
 from django.db.models import Q
 from rest_framework.views import APIView
+from rest_framework.decorators import action
 
 #* ============ There will be All the Functions of the WorkSpace   ============ *# 
 
@@ -59,6 +60,7 @@ class TimelineViewSet(viewsets.ModelViewSet):
     queryset =  Timeline.objects.all()
     serializer_class = TimeLineSerializer
 
+# View to handle Get all Timeline for a single workspace 
 class WorkspaceTimelinesList(generics.ListAPIView):
     serializer_class = TimeLineSerializer
 
@@ -87,4 +89,52 @@ class UserWorkspaces(generics.ListAPIView):
         return WorkSpace.objects.filter(member__user_id=user_id)
 
 
-        
+
+#* ============ View for creating the scurm ============ *# 
+class scrumViewset(viewsets.ModelViewSet):
+    queryset =  Scrum.objects.all()
+    serializer_class = ScrumSerializer
+
+# Find all the scurms for an timeline 
+@api_view(['GET'])
+def timeline_scrums(request, timeline_id):
+    try:
+        scrums = Scrum.objects.filter(timeline_Name_id=timeline_id)
+        serializer = ScrumSerializer(scrums, many=True)
+        return Response(serializer.data)
+    except Scrum.DoesNotExist:
+        return Response({"message": "Timeline scrums not found"}, status=404)
+    
+
+#* ============ View for creating the task ============ *# 
+class taskViewset(viewsets.ModelViewSet):
+    queryset =  Task.objects.all()
+    serializer_class = TaskSerializer
+
+#Get all task for single scurm 
+@api_view(['GET'])
+def scrum_tasks(request, scrum_id):
+    try:
+        tasks = Task.objects.filter(scrum_Name_id=scrum_id)
+        serializer = TaskSerializer(tasks, many=True)
+        return Response(serializer.data)
+    except Task.DoesNotExist:
+        return Response({"message": "Scrum tasks not found"}, status=404)
+
+   
+#* ============ View for creating the taskComment ============ *# 
+class taskCommentViewset(viewsets.ModelViewSet):
+    queryset =  TaskComment.objects.all()
+    serializer_class = TaskCommentSerializer
+
+#Get all commments for task 
+@api_view(['GET'])
+def task_comments(request, task_id):
+    try:
+        comments = TaskComment.objects.filter(task_Name_id=task_id)
+        serializer = TaskCommentSerializer(comments, many=True)
+        return Response(serializer.data)
+    except TaskComment.DoesNotExist:
+        return Response({"message": "Task comments not found"}, status=404)
+    
+    
