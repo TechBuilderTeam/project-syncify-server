@@ -23,6 +23,10 @@ urlpatterns = [
     path('timeline/<int:timeline_id>/scrums/', timeline_scrums, name='timeline-scrums'),
     path('scrum/<int:scrum_id>/tasks/', scrum_tasks, name='scrum-tasks'),
     path('taskcomments/<int:task_id>/comments/', task_comments, name='task-comments'),
+    path('user/<int:user_id>/workspace/<int:workspace_id>/position/', user_position_in_workspace, name='user-position-in-workspace'),
+    
+    #todo 
+    # path('task/<int:task_id>/status/', update_task_status, name='update-task-status'),
     
 ]
 
