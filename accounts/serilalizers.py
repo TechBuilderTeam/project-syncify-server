@@ -130,14 +130,14 @@ class SetNewPasswordSerializer(serializers.Serializer):
             raise AuthenticationFailed('The reset link is invalid, please request a new one')
 
 class LogoutSerializer(serializers.Serializer):
-    refresh_token=serializers.CharField(max_length=500)
+    refresh_token=serializers.CharField()
     
     default_error_messages={
         'bad_token': 'Token is invalid or expired',
     }
     
     def validate(self, attrs):
-        self.token=attrs.get('token')
+        self.token=attrs.get('refresh_token')
         return attrs
     
     def save(self, **kwargs):
