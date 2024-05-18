@@ -147,19 +147,37 @@ def user_position_in_workspace(request, user_id, workspace_id):
     except Member.DoesNotExist:
         return Response({"message": "Member not found in the specified workspace"}, status=404)
 
-#todo 
-#This wil us only to change the status of a task 
-# @api_view(['PATCH'])
-# def update_task_status(request, task_id):
-#     try:
-#         task = Task.objects.get(id=task_id)
-#     except Task.DoesNotExist:
-#         return Response({"message": "Task not found"}, status=status.HTTP_404_NOT_FOUND)
-    
-#     new_status = request.data.get('status')
-#     if new_status not in Task_Status.choices:
-#         return Response({"message": "Invalid status"}, status=status.HTTP_400_BAD_REQUEST)
-    
-#     task.status = new_status
-#     task.save()
-#     return Response({"message": "Status updated successfully"}, status=status.HTTP_200_OK)@api_view(['PATCH'])
+#* ============== This function for change the task priority =====================*#
+class TaskPriorityUpdateView(generics.UpdateAPIView):
+    queryset = Task.objects.all()
+    serializer_class = TaskSerializerPriority
+
+    def update(self, request, *args, **kwargs):
+        partial = kwargs.pop('partial', False)
+        instance = self.get_object()
+        serializer = self.get_serializer(instance, data=request.data, partial=partial)
+        serializer.is_valid(raise_exception=True)
+        self.perform_update(serializer)
+
+        if getattr(instance, '_prefetched_objects_cache', None):
+            instance._prefetched_objects_cache = {}
+
+        return Response(serializer.data, status=status.HTTP_200_OK)
+
+
+#* ============== This function for change the task status =====================*#
+class TaskPriorityUpdateView(generics.UpdateAPIView):
+    queryset = Task.objects.all()
+    serializer_class = TaskSerializerStatus
+
+    def update(self, request, *args, **kwargs):
+        partial = kwargs.pop('partial', False)
+        instance = self.get_object()
+        serializer = self.get_serializer(instance, data=request.data, partial=partial)
+        serializer.is_valid(raise_exception=True)
+        self.perform_update(serializer)
+
+        if getattr(instance, '_prefetched_objects_cache', None):
+            instance._prefetched_objects_cache = {}
+
+        return Response(serializer.data, status=status.HTTP_200_OK)
