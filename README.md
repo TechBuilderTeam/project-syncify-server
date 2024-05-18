@@ -122,7 +122,7 @@ more endpoints comming soon...
 
 <td align="center">
 <a href="https://github.com/najmulislamnajim">
-<img src="https://avatars.githubusercontent.com/u/78375634?s=96&v=4" width="100px;" alt="Najmul Islam Profile Picture"/><br>
+<img src="https://i.pinimg.com/736x/90/e7/37/90e7370bc6c22359dc07c5f8b057a5ce.jpg" width="100px;" alt="Najmul Islam Profile Picture"/><br>
 <sub>
 <b>Najmul Islam</b>
 </sub>
