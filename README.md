@@ -10,7 +10,7 @@
 </p>
 
 
-<p align="center">Simple description of what is our project do or how to use it</p>
+<p align="center">ProjectSyncify is a Project Management Application.</p>
 
 
 <p align="center">
