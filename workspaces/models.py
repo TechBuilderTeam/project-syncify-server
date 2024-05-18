@@ -22,10 +22,12 @@ class Member(models.Model):
     workspace_Name =  models.ForeignKey(WorkSpace, on_delete=models.CASCADE,null=True)
     role = models.CharField(max_length=100, choices=roles_choice.choices, default=roles_choice.MEMBER)
     user = models.ForeignKey(User, on_delete=models.CASCADE)
+    pending = models.BooleanField(default=True)
 
     def __str__(self):
         return f"Member name :{self.user.first_name} , Member's User ID: {self.user.id}" 
-    
+    class Meta:
+        unique_together =('workspace_Name','user')
 
 
 # * ==================== * This is TimeLine Model * =========================== * #
