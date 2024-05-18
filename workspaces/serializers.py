@@ -22,5 +22,5 @@ class MemberSerializer(serializers.ModelSerializer):
 
     class Meta: 
         model = Member
-        fields = ['workspace_Name','id', 'role', 'user']
-
+        fields = ['workspace_Name','role', 'user']
+        

@@ -10,4 +10,5 @@ urlpatterns = [
 
     #* ======= This API Route from Workspace  ====== *#
     path('workspace/', include('workspaces.urls')),
+    path('api/v2/workspace/',include('workspaces.urls2')),
 ]

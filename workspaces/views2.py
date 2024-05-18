@@ -1,13 +1,46 @@
 from rest_framework import generics, status
 from rest_framework.response import Response
-from .models import Member,roles_choice
+from .models import Member,roles_choice,WorkSpace
 from .serializers import MemberSerializer
 from django.db.models import Case, When, Value, IntegerField
+from .utils import *
+from accounts.models import User
+from django.utils.encoding import force_str
+from django.shortcuts import redirect
 
-class AddMember(generics.CreateAPIView):
+from django.core.signing import SignatureExpired
+
+# Add new member to  workspaces
+class AddMember(generics.GenericAPIView):
     #method: POST, body: workspace_name=workspace.id,user,role
-    queryset = Member.objects.all()
+    # queryset = Member.objects.all()
     serializer_class = MemberSerializer
+    def post(self, request, *args, **kwargs):
+        serializer = self.get_serializer(data=request.data)
+        serializer.is_valid(raise_exception=True)
+        workspace = serializer.validated_data['workspace_Name']
+        user = serializer.validated_data['user']
+        # Check if the user is the manager of the workspace
+        if workspace.workSpace_manager == user:
+            return Response({"error": "Workspace manager cannot be assigned as a member."}, status=status.HTTP_400_BAD_REQUEST)
+        
+        if User.objects.filter(email=user.email).exists():
+            # Send an email to the user to accept the join request
+            send_join_request_email(user,workspace)
+        else:
+            # Send a registration link to the email
+            registration_link = generate_registration_link(user.email)
+            send_registration_email(user.email, registration_link)
+            # Set the user's status to "pending" since they haven't registered yet
+            
+        
+        # Save the member with the appropriate status
+        serializer.save()
+        
+        return Response(serializer.data, status=status.HTTP_201_CREATED)
+        
+        serializer.save()
+        return Response(serializer.data, status=status.HTTP_201_CREATED)
 
 class RemoveMember(generics.DestroyAPIView):
     queryset = Member.objects.all()
@@ -58,3 +91,20 @@ class WorkspaceMembersList(generics.ListAPIView): #method: GET
         )
         queryset = Member.objects.filter(workspace_Name_id=workspace_id).order_by(order_by_roles)
         return queryset
+      
+    
+class ActivateMemberView(generics.GenericAPIView):
+    def get(self, request, uid64, token):
+        try:
+            uid = urlsafe_base64_decode(uid64).decode()
+            user = User._default_manager.get(pk=uid)
+        except User.DoesNotExist:
+            user = None 
+        
+        if user is not None and default_token_generator.check_token(user, token):
+            member = Member.objects.get(user=user, pending=True)
+            member.pending = False
+            member.save()
+            return Response({'message': 'Member activated successfully'}, status=status.HTTP_200_OK)
+        else:
+            return Response({'error': 'Invalid or expired token'}, status=status.HTTP_400_BAD_REQUEST)
