@@ -47,6 +47,19 @@ class TaskSerializer(serializers.ModelSerializer):
         model = Task
         fields = '__all__'
 
+# * ================ This Serializer is for the Task ================ * #
+class TaskSerializerPriority(serializers.ModelSerializer):
+    class Meta:
+        model = Task
+        fields = ['priority']
+
+
+# * ================ This Serializer is for the Task ================ * #
+class TaskSerializerStatus(serializers.ModelSerializer):
+    class Meta:
+        model = Task
+        fields = ['status']
+
 
 # * ================ This Serializer is for the Task ================ * #
 class TaskCommentSerializer(serializers.ModelSerializer):
