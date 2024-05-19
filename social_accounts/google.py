@@ -27,11 +27,14 @@ def register_social_user(provider, email, first_name, last_name):
     if old_user.exists():
         if provider == old_user[0].auth_provider:
             register_user=authenticate(email=email, password=settings.SOCIAL_AUTH_PASSWORD)
-
+            tokens=register_user.tokens()
             return {
+                'user_id':register_user.id,
                 'full_name':register_user.get_full_name,
                 'email':register_user.email,
-                'tokens':register_user.tokens()
+                'tokens':register_user.tokens(),
+                "access_token":str(tokens.get('access_token')),
+                "refresh_token":str(tokens.get('refresh_token'))
             }
         else:
             raise AuthenticationFailed(
@@ -55,6 +58,6 @@ def register_social_user(provider, email, first_name, last_name):
             'user_id':login_user.id,
             'email':login_user.email,
             'full_name':login_user.get_full_name,
-            "access_token":str(tokens.get('access')),
-            "refresh_token":str(tokens.get('refresh'))
+            "access_token":str(tokens.get('access_token')),
+            "refresh_token":str(tokens.get('refresh_token'))
         }
