@@ -6,27 +6,27 @@ from .github import GitHub
 
 
 class GoogleSignInSerializer(serializers.Serializer):
-    access_token = serializers.CharField(min_length=6)
-    
-    def validate_access_token(self,access_token):
+    access_token=serializers.CharField(min_length=6)
+
+
+    def validate_access_token(self, access_token):
         user_data=Google.validate(access_token)
-        
         try:
             user_data['sub']
             
         except:
-            raise serializers.ValidationError('This token is invalid or expired')
+            raise serializers.ValidationError("this token has expired or invalid please try again")
         
-        if user_data['aud'] !=settings.GOOGLE_CLIENT_ID:
-            raise AuthenticationFailed(detail='Could not verify your Google account')
-        
+        if user_data['aud'] != settings.GOOGLE_CLIENT_ID:
+                raise AuthenticationFailed('Could not verify user.')
+
         user_id=user_data['sub']
         email=user_data['email']
         first_name=user_data['given_name']
         last_name=user_data['family_name']
         provider='google'
-        
-        return register_social_user(provider,email,first_name,last_name)
+
+        return register_social_user(provider, email, first_name, last_name)
     
     
 class GitHubSignInSerializer(serializers.Serializer):

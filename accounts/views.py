@@ -1,4 +1,4 @@
-from django.shortcuts import render
+from django.shortcuts import render,redirect
 from django.utils.http import urlsafe_base64_encode,urlsafe_base64_decode
 from django.utils.encoding import smart_str,DjangoUnicodeDecodeError
 from django.utils.encoding import smart_str,smart_bytes
@@ -64,7 +64,8 @@ class PasswordResetConfirmView(GenericAPIView):
             user=User.objects.get(id=user_id)
             if not PasswordResetTokenGenerator().check_token(user,token):
                 return Response({'message':'Invalid Token'},status=status.HTTP_401_UNAUTHORIZED)
-            return Response({'success':True,'message':'credential is valid','uidb64':uidb64,'token':token},status=status.HTTP_200_OK)
+            # return Response({'success':True,'message':'credential is valid','uidb64':uidb64,'token':token},status=status.HTTP_200_OK)
+            return redirect('https://project-syncify.netlify.app/')
         except DjangoUnicodeDecodeError:
             return Response({'message':'Invalid Token'},status=status.HTTP_401_UNAUTHORIZED)
         
