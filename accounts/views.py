@@ -9,7 +9,7 @@ from rest_framework.generics import GenericAPIView
 from rest_framework.response import Response
 from rest_framework.permissions import IsAuthenticated
 
-from .serializers import UserRegisterSerializer,UserLoginSerializer,PasswordResetRequestSerializer,SetNewPasswordSerializer,LogoutSerializer
+from .serializers import *
 from .utils import send_otp_to_user
 from .models import OneTimePassword,User
 
@@ -80,9 +80,11 @@ class SetNewPasswordView(GenericAPIView):
 
 class LogoutView(GenericAPIView):
     serializer_class=LogoutSerializer
-    permission_classes=[IsAuthenticated]
+    # permission_classes=[IsAuthenticated]
     
     def post(self,request):
         serializer=self.serializer_class(data=request.data)
         serializer.is_valid(raise_exception=True)
         serializer.save()
+        return Response({"detail": "Successfully logged out"}, status=status.HTTP_200_OK)
+    
