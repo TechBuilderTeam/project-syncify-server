@@ -43,16 +43,18 @@ class UserLoginSerializer(serializers.ModelSerializer):
     full_name=serializers.CharField(max_length=255,read_only=True)
     access_token=serializers.CharField(max_length=255,read_only=True)
     refresh_token=serializers.CharField(max_length=255,read_only=True)
+    user_id=serializers.CharField(max_length=255,read_only=True)
     
     class Meta:
         model=User
-        fields=['email','password','full_name','access_token','refresh_token']
+        fields=['user_id','email','password','full_name','access_token','refresh_token']
     
     def validate(self, attrs):
         email = attrs.get('email')
         password = attrs.get('password')
         request=self.context.get('request')
         user=authenticate(request,email=email,password=password)
+        print(user.id)
         
         if not user:
             raise AuthenticationFailed('Invalid credentials, please try again')

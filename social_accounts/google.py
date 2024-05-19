@@ -52,6 +52,7 @@ def register_social_user(provider, email, first_name, last_name):
        
         tokens=login_user.tokens()
         return {
+            'user_id':login_user.id,
             'email':login_user.email,
             'full_name':login_user.get_full_name,
             "access_token":str(tokens.get('access')),
