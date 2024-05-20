@@ -8,10 +8,10 @@ router = routers.DefaultRouter()
 
 router.register('list' , workSpaceViewSet)
 router.register('member' , MemberViewSet)
-router.register('timeline' , TimelineViewSet)
-router.register('scrum' , scrumViewset)
-router.register('task' , taskViewset)
-router.register('taskcomments' , taskCommentViewset)
+router.register('createTimeline' , TimelineViewSet)
+router.register('createScrum' , scrumViewset)
+router.register('createTask' , taskViewset)
+router.register('createTaskcomments' , taskCommentViewset)
 
 urlpatterns = [
     path('', include(router.urls)),
