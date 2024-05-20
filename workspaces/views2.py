@@ -74,7 +74,7 @@ class ChangeRole(generics.UpdateAPIView):
             return Response({"error": "Member not found"}, status=status.HTTP_404_NOT_FOUND)
         
 class WorkspaceMembersList(generics.ListAPIView): #method: GET
-    serializer_class = MemberSerializer
+    serializer_class = WorkspaceMembers
 
     def get_queryset(self):
         workspace_id = self.kwargs['workspace_id']
@@ -85,6 +85,7 @@ class WorkspaceMembersList(generics.ListAPIView): #method: GET
             output_field=IntegerField(),
         )
         queryset = Member.objects.filter(workspace_Name_id=workspace_id).order_by(order_by_roles)
+       
         return queryset
       
     
