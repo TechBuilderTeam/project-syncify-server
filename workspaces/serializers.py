@@ -1,6 +1,6 @@
 from rest_framework import serializers
 from .models import *
-from accounts.serilalizers import UserRegisterSerializer
+from accounts.serializers import UserRegisterSerializer
 
 # * ================ This Serializer is for the WorkSpace Creation ================ * #
 class WorkSpaceSerializer(serializers.ModelSerializer):

@@ -43,16 +43,18 @@ class UserLoginSerializer(serializers.ModelSerializer):
     full_name=serializers.CharField(max_length=255,read_only=True)
     access_token=serializers.CharField(max_length=255,read_only=True)
     refresh_token=serializers.CharField(max_length=255,read_only=True)
+    user_id=serializers.CharField(max_length=255,read_only=True)
     
     class Meta:
         model=User
-        fields=['email','password','full_name','access_token','refresh_token']
+        fields=['user_id','email','password','full_name','access_token','refresh_token']
     
     def validate(self, attrs):
         email = attrs.get('email')
         password = attrs.get('password')
         request=self.context.get('request')
         user=authenticate(request,email=email,password=password)
+        print(user.id)
         
         if not user:
             raise AuthenticationFailed('Invalid credentials, please try again')
@@ -130,20 +132,26 @@ class SetNewPasswordSerializer(serializers.Serializer):
             raise AuthenticationFailed('The reset link is invalid, please request a new one')
 
 class LogoutSerializer(serializers.Serializer):
-    refresh_token=serializers.CharField(max_length=500)
-    
-    default_error_messages={
+    refresh_token = serializers.CharField()
+    print(refresh_token,'pq1')
+    default_error_messages = {
         'bad_token': 'Token is invalid or expired',
     }
     
     def validate(self, attrs):
-        self.token=attrs.get('token')
+        print('test')
+        refresh_token = attrs['refresh_token']
+        print(refresh_token)
+        if not refresh_token:
+            raise serializers.ValidationError("Refresh token is required")
         return attrs
     
     def save(self, **kwargs):
+        refresh_token = self.validated_data['refresh_token']
         try:
-            # RefreshToken.objects.get(token=self.token).delete()
-            token=RefreshToken(self.token)
+            token = RefreshToken(refresh_token)
+            print(token)
             token.blacklist()
         except Exception as e:
-            return self.fail('bad_token')
+            raise serializers.ValidationError("Failed to blacklist token")
+        
