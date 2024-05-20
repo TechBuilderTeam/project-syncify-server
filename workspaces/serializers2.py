@@ -28,4 +28,13 @@ class AddMemberSerializer(serializers.ModelSerializer):
             pending=False,
         )
         return member
-        
+
+
+class WorkspaceMembers(serializers.ModelSerializer):
+    user_id = serializers.ReadOnlyField(source='user.id')
+    user_name = serializers.ReadOnlyField(source='user.get_full_name')
+    user_email = serializers.ReadOnlyField(source='user.email')
+
+    class Meta:
+        model = Member
+        fields = ['user_id', 'user_name', 'user_email', 'role']
