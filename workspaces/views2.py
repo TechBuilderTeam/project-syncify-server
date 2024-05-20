@@ -7,40 +7,34 @@ from .utils import *
 from accounts.models import User
 from django.utils.encoding import force_str
 from django.shortcuts import redirect
-
+from .serializers2 import *
 from django.core.signing import SignatureExpired
 
 # Add new member to  workspaces
 class AddMember(generics.GenericAPIView):
     #method: POST, body: workspace_name=workspace.id,user,role
-    # queryset = Member.objects.all()
-    serializer_class = MemberSerializer
+    serializer_class = AddMemberSerializer
     def post(self, request, *args, **kwargs):
         serializer = self.get_serializer(data=request.data)
         serializer.is_valid(raise_exception=True)
         workspace = serializer.validated_data['workspace_Name']
-        user = serializer.validated_data['user']
+        email = serializer.validated_data['email']
+        role=serializer.validated_data['role']
+        try:
+            user=User.objects.get(email=email)
+        except User.DoesNotExist:
+            return Response({"error": "User does not exist."}, status=status.HTTP_400_BAD_REQUEST)
         # Check if the user is the manager of the workspace
         if workspace.workSpace_manager == user:
             return Response({"error": "Workspace manager cannot be assigned as a member."}, status=status.HTTP_400_BAD_REQUEST)
         
-        if User.objects.filter(email=user.email).exists():
-            # Send an email to the user to accept the join request
-            send_join_request_email(user,workspace)
-        else:
-            # Send a registration link to the email
-            registration_link = generate_registration_link(user.email)
-            send_registration_email(user.email, registration_link)
-            # Set the user's status to "pending" since they haven't registered yet
+        if Member.objects.filter(workspace_Name=workspace, user=user).exists():
+            return Response({"error": "User is already a member of this workspace."}, status=status.HTTP_400_BAD_REQUEST)
+        serializer.save()
             
-        
-        # Save the member with the appropriate status
-        serializer.save()
-        
-        return Response(serializer.data, status=status.HTTP_201_CREATED)
-        
-        serializer.save()
-        return Response(serializer.data, status=status.HTTP_201_CREATED)
+        return Response({"data":serializer.data,"message": "Member added successfully."}, status=status.HTTP_201_CREATED)
+
+
 
 class RemoveMember(generics.DestroyAPIView):
     queryset = Member.objects.all()
@@ -49,12 +43,13 @@ class RemoveMember(generics.DestroyAPIView):
         # method: DELETE, body:workspace_id,user_id 
         workspace_id = request.data.get('workspace_id')
         user_id = request.data.get('user_id')
+        print(workspace_id,user_id)
         if workspace_id is None or user_id is None:
             return Response({"error": "workspace_id and user_id are required"}, status=status.HTTP_400_BAD_REQUEST)
         try:
-            member = self.get_queryset().get(workspace_Name_id=workspace_id, user_id=user_id)
+            member = self.get_queryset().get(workspace_Name=workspace_id, user__id=user_id)
             member.delete() #Delete the member
-            return Response(status=status.HTTP_200_OK)
+            return Response({'message': 'member remove successfull'},status=status.HTTP_200_OK)
         except Member.DoesNotExist:
             return Response({"error": "Member not found"}, status=status.HTTP_404_NOT_FOUND)
 
