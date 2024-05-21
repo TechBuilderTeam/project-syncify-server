@@ -16,7 +16,10 @@ from rest_framework.decorators import action
 class workSpaceViewSet(viewsets.ModelViewSet):
     queryset =  WorkSpace.objects.all()
     serializer_class = WorkSpaceSerializer
-
+#* ======== Get Workspace name ====== #
+class WorkSpaceDetailView(generics.RetrieveAPIView):
+    queryset = WorkSpace.objects.all()
+    serializer_class = WorkSpaceSerializer
 
 class WorkspaceMembersList(generics.ListAPIView):
     serializer_class = MemberSerializer
