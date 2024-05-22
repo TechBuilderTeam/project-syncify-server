@@ -76,9 +76,9 @@ class Task_Status(models.TextChoices):
     TO_DO = "To Do"
     DONE = "Done"
 class TaskPriority(models.TextChoices):
-    NORMAL = "Normal Priority"
-    MID = "MID Priority"
-    IMMEDIATE = "Immediate Priority"
+    LOW = "LOW"
+    MID = "MID"
+    HIGH = "HIGH"
 
 class TaskType(models.TextChoices):
     FEATURE = "Feature"
@@ -92,7 +92,7 @@ class Task(models.Model):
     details = models.TextField()
     assign = models.ForeignKey(Member, on_delete=models.CASCADE)
     status = models.CharField(max_length=100, choices=Task_Status.choices, default=Task_Status.TO_DO)
-    priority = models.CharField(max_length=100, choices=TaskPriority.choices, default=TaskPriority.NORMAL)
+    priority = models.CharField(max_length=100, choices=TaskPriority.choices, default=TaskPriority.LOW)
     which_Type = models.CharField(max_length=100, choices=TaskType.choices, default=TaskType.TASK)
     task_Value = models.DecimalField(max_digits=5, decimal_places=0)
 

@@ -118,17 +118,17 @@ class taskViewset(viewsets.ModelViewSet):
 @api_view(['GET'])
 def scrum_tasks(request, scrum_id):
     try:
-        tasks = Task.objects.filter(scrum_Name_id=scrum_id)
+        tasks = Task.objects.filter(scrum_Name_id=scrum_id).order_by('-priority')  # Order by priority (high to low)
         serializer = TaskSerializer(tasks, many=True)
         return Response(serializer.data)
     except Task.DoesNotExist:
         return Response({"message": "Scrum tasks not found"}, status=404)
-
-   
+    
 #* ============ View for creating the taskComment ============ *# 
 class taskCommentViewset(viewsets.ModelViewSet):
     queryset =  TaskComment.objects.all()
     serializer_class = TaskCommentSerializer
+
 
 #Get all commments for task 
 @api_view(['GET'])
