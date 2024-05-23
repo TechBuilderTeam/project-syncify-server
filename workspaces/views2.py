@@ -9,6 +9,7 @@ from django.utils.encoding import force_str
 from django.shortcuts import redirect
 from .serializers2 import *
 from django.core.signing import SignatureExpired
+from .models import Task_Status
 
 # Add new member to  workspaces
 class AddMember(generics.GenericAPIView):
@@ -104,3 +105,26 @@ class ActivateMemberView(generics.GenericAPIView):
             return Response({'message': 'Member activated successfully'}, status=status.HTTP_200_OK)
         else:
             return Response({'error': 'Invalid or expired token'}, status=status.HTTP_400_BAD_REQUEST)
+        
+        
+        
+class ChangeStatusView(generics.UpdateAPIView):
+    # method: PATCH/PUT, body:workspace_id,user_id,new_role
+    
+    queryset = Task.objects.all()
+    serializer_class = UpdateStatusSerializer
+
+    def update(self, request, *args, **kwargs):
+        task_id = request.data.get('task_id')
+        new_status = request.data.get('status') 
+        if new_status not in Task_Status:
+            return Response({"error": "Invalid status"}, status=status.HTTP_400_BAD_REQUEST)
+        if task_id is None or new_status is None:
+            return Response({"error": "task_id, and new_status are required"}, status=status.HTTP_400_BAD_REQUEST)
+        try:
+            task = Task.objects.get(id=task_id)
+            task.status=new_status
+            task.save()
+            return Response(status=status.HTTP_205_RESET_CONTENT)
+        except Task.DoesNotExist:
+            return Response({"error": "Task not found"}, status=status.HTTP_404_NOT_FOUND)

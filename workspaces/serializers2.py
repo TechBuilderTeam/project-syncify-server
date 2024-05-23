@@ -38,3 +38,9 @@ class WorkspaceMembers(serializers.ModelSerializer):
     class Meta:
         model = Member
         fields = ['user_id', 'user_name', 'user_email', 'role']
+        
+class UpdateStatusSerializer(serializers.ModelSerializer):
+    task_id=serializers.CharField(write_only=True,max_length=10)
+    class Meta:
+        model = Task 
+        fields=['task_id','status']
