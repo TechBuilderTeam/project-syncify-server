@@ -40,11 +40,12 @@ class Timeline_Status(models.TextChoices):
 class Timeline(models.Model):
     workspace_Name =  models.ForeignKey(WorkSpace, on_delete=models.CASCADE,null=True)
     name = models.CharField(max_length=500)
-    details = models.TextField()
-    assign = models.ForeignKey(Member, on_delete=models.CASCADE)
-    start_Date = models.DateTimeField(auto_now=False, auto_now_add=False)
-    end_Date = models.DateTimeField(auto_now=False, auto_now_add=False)
+    details = models.TextField(blank=True,null=True)
+    assign = models.ForeignKey(Member, on_delete=models.CASCADE, blank=True,null=True)
+    start_Date = models.DateField(auto_now=False, auto_now_add=False)
+    end_Date = models.DateField(auto_now=False, auto_now_add=False)
     comment = models.TextField(null=True,blank=True)
+    remaining_time = models.IntegerField(blank=True, null=True)
     duration = models.IntegerField(blank=True, null=True)
     status = models.CharField(max_length=100, choices=Timeline_Status.choices, default=Timeline_Status.TO_DO)
 
@@ -57,7 +58,10 @@ class Timeline(models.Model):
         super().save(*args, **kwargs)  # Call the original save method
     
     def __str__(self):
-        return f"Timeline Name : {self.name} Team Lead : {self.assign.user}"
+        if self.assign is None:
+            return f"Timeline Name: {self.name} Team Lead: Not Assigned"
+        else:
+            return f"Timeline Name: {self.name} Team Lead: {self.assign.user}"
 
 # * ==================== * This is Scrum Model * =========================== * #
 class Scrum(models.Model):
@@ -76,9 +80,9 @@ class Task_Status(models.TextChoices):
     TO_DO = "To Do"
     DONE = "Done"
 class TaskPriority(models.TextChoices):
-    NORMAL = "Normal Priority"
-    MID = "MID Priority"
-    IMMEDIATE = "Immediate Priority"
+    LOW = "LOW"
+    MID = "MID"
+    HIGH = "HIGH"
 
 class TaskType(models.TextChoices):
     FEATURE = "Feature"
@@ -92,7 +96,7 @@ class Task(models.Model):
     details = models.TextField()
     assign = models.ForeignKey(Member, on_delete=models.CASCADE)
     status = models.CharField(max_length=100, choices=Task_Status.choices, default=Task_Status.TO_DO)
-    priority = models.CharField(max_length=100, choices=TaskPriority.choices, default=TaskPriority.NORMAL)
+    priority = models.CharField(max_length=100, choices=TaskPriority.choices, default=TaskPriority.LOW)
     which_Type = models.CharField(max_length=100, choices=TaskType.choices, default=TaskType.TASK)
     task_Value = models.DecimalField(max_digits=5, decimal_places=0)
 

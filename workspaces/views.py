@@ -8,6 +8,8 @@ from rest_framework import status,generics
 from django.db.models import Q
 from rest_framework.views import APIView
 from rest_framework.decorators import action
+from django.db.models import Avg, Max, Min
+from rest_framework.exceptions import NotFound
 
 #* ============ There will be All the Functions of the WorkSpace   ============ *# 
 
@@ -16,7 +18,10 @@ from rest_framework.decorators import action
 class workSpaceViewSet(viewsets.ModelViewSet):
     queryset =  WorkSpace.objects.all()
     serializer_class = WorkSpaceSerializer
-
+#* ======== Get Workspace name ====== #
+class WorkSpaceDetailView(generics.RetrieveAPIView):
+    queryset = WorkSpace.objects.all()
+    serializer_class = WorkSpaceSerializer
 
 class WorkspaceMembersList(generics.ListAPIView):
     serializer_class = MemberSerializer
@@ -55,18 +60,69 @@ class MemberViewSet(viewsets.ModelViewSet):
     serializer_class = MemberSerializer
 
 
-#* ============ This the Creation of the Timeline viewset   ============ *# 
-class TimelineViewSet(viewsets.ModelViewSet):
-    queryset =  Timeline.objects.all()
-    serializer_class = TimeLineSerializer
+#* ============ This the GET of the Timeline viewset   ============ *# 
+class TimelineDetailView(generics.RetrieveAPIView):
+    queryset = Timeline.objects.all()
+    serializer_class = TimelineDetailSerializer
 
-# View to handle Get all Timeline for a single workspace 
+#* ============ This the Creation of the Timeline viewset   ============ *# 
+class TimelineCreateView(generics.CreateAPIView):
+    queryset = Timeline.objects.all()
+    serializer_class = TimelineCreationSerializer
+
+#* ============ This the Update of the Timeline viewset   ============ *# 
+class TimelineUpdateView(generics.UpdateAPIView):
+    queryset = Timeline.objects.all()
+    serializer_class = TimelineCreationSerializer
+
+#* ============ This the Delete  of the Timeline viewset   ============ *# 
+class TimelineDeleteView(generics.DestroyAPIView):
+    queryset = Timeline.objects.all()
+    lookup_field = 'pk'
+
+    def destroy(self, request, *args, **kwargs):
+        try:
+            instance = self.get_object()
+            self.perform_destroy(instance)
+            return Response({"detail": "Timeline deleted successfully."}, status=status.HTTP_204_NO_CONTENT)
+        except NotFound:
+            return Response({"detail": "Timeline not found."}, status=status.HTTP_404_NOT_FOUND)
+
+# * ============ View to handle Get all Timeline for a single workspace ================
 class WorkspaceTimelinesList(generics.ListAPIView):
-    serializer_class = TimeLineSerializer
+    serializer_class = TimelineDetailSerializer
 
     def get_queryset(self):
         workspace_id = self.kwargs['workspace_id']
         return Timeline.objects.filter(workspace_Name_id=workspace_id)
+
+    def list(self, request, *args, **kwargs):
+        queryset = self.get_queryset()
+        serializer = self.get_serializer(queryset, many=True)
+        
+        max_duration = queryset.aggregate(Max('duration'))['duration__max']
+        min_duration = queryset.aggregate(Min('duration'))['duration__min']
+        avg_duration = queryset.aggregate(Avg('duration'))['duration__avg']
+
+        # Find the timeline with the longest duration
+        if max_duration is not None:
+            max_duration_timeline = queryset.filter(duration=max_duration).first()
+            max_duration_timeline_name = max_duration_timeline.name if max_duration_timeline else None
+        else:
+            max_duration_timeline_name = None
+
+        response_data = {
+            'max_duration_timeline_name': max_duration_timeline_name,
+            'max_duration': max_duration,
+            'min_duration': min_duration,
+            'avg_duration': avg_duration,
+            'timelines': serializer.data,
+        }
+
+        return Response(response_data)
+    
+
+
 
 #* ============ View to check if a user is a member of a specific workspace ============ *# 
 class IsUserMember(APIView):
@@ -115,17 +171,17 @@ class taskViewset(viewsets.ModelViewSet):
 @api_view(['GET'])
 def scrum_tasks(request, scrum_id):
     try:
-        tasks = Task.objects.filter(scrum_Name_id=scrum_id)
+        tasks = Task.objects.filter(scrum_Name_id=scrum_id).order_by('-priority')  # Order by priority (high to low)
         serializer = TaskSerializer(tasks, many=True)
         return Response(serializer.data)
     except Task.DoesNotExist:
         return Response({"message": "Scrum tasks not found"}, status=404)
-
-   
+    
 #* ============ View for creating the taskComment ============ *# 
 class taskCommentViewset(viewsets.ModelViewSet):
     queryset =  TaskComment.objects.all()
     serializer_class = TaskCommentSerializer
+
 
 #Get all commments for task 
 @api_view(['GET'])
