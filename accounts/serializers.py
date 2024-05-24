@@ -139,8 +139,7 @@ class LogoutSerializer(serializers.Serializer):
     }
     
     def validate(self, attrs):
-        print('test')
-        refresh_token = attrs['refresh_token']
+        refresh_token = attrs.get('refresh_token')
         print(refresh_token)
         if not refresh_token:
             raise serializers.ValidationError("Refresh token is required")
@@ -148,10 +147,15 @@ class LogoutSerializer(serializers.Serializer):
     
     def save(self, **kwargs):
         refresh_token = self.validated_data['refresh_token']
+        print(refresh_token)
         try:
             token = RefreshToken(refresh_token)
+            if token:
+                print('token found')
+            else:
+                print('token not found')
             print(token)
-            token.blacklist()
+            # token.blacklist()
         except Exception as e:
             raise serializers.ValidationError("Failed to blacklist token")
         

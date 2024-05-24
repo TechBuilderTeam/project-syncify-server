@@ -9,4 +9,5 @@ urlpatterns = [
     path('<int:workspace_id>/members/', WorkspaceMembersList.as_view(), name='workspace-members-list'),
     path('member/acivate/<uid64>/<token>/',ActivateMemberView.as_view(),name='active_member'),
     path('task/update-status/',ChangeStatusView.as_view(),name='change_task_status'),
+    path('<int:pk>/details/',WorkSpaceDetailView.as_view(),name='workspace-details'),
 ]
