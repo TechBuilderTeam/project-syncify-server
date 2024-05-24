@@ -128,3 +128,8 @@ class ChangeStatusView(generics.UpdateAPIView):
             return Response(status=status.HTTP_205_RESET_CONTENT)
         except Task.DoesNotExist:
             return Response({"error": "Task not found"}, status=status.HTTP_404_NOT_FOUND)
+        
+class WorkSpaceDetailView(generics.RetrieveAPIView):
+    queryset = WorkSpace.objects.all()
+    serializer_class = WorkspaceDetailsSerializer
+    lookup_field = 'pk'

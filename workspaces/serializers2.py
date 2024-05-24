@@ -44,3 +44,15 @@ class UpdateStatusSerializer(serializers.ModelSerializer):
     class Meta:
         model = Task 
         fields=['task_id','status']
+        
+class WorkspaceDetailsSerializer(serializers.ModelSerializer):
+    workspace_manager_name = serializers.CharField(source='workSpace_manager.get_full_name', read_only=True)
+    workspace_manager_email = serializers.EmailField(source='workSpace_manager.email', read_only=True)
+    workspace_total_members = serializers.SerializerMethodField()
+
+    class Meta:
+        model = WorkSpace
+        fields = ['name', 'workspace_manager_name', 'workspace_manager_email', 'workspace_total_members','created_at','updated_at']
+
+    def get_workspace_total_members(self, obj):
+        return Member.objects.filter(workspace_Name=obj).count()
