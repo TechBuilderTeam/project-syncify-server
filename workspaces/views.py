@@ -122,8 +122,6 @@ class WorkspaceTimelinesList(generics.ListAPIView):
         return Response(response_data)
     
 
-
-
 #* ============ View to check if a user is a member of a specific workspace ============ *# 
 class IsUserMember(APIView):
 
@@ -145,12 +143,6 @@ class UserWorkspaces(generics.ListAPIView):
         return WorkSpace.objects.filter(
             Q(workSpace_manager_id=user_id) | Q(member__user_id=user_id)
         ).distinct()
-
-
-
-
-
-
 
 #* ============ View for creating the scurm ============ *# 
 class scrumViewset(viewsets.ModelViewSet):
@@ -188,41 +180,59 @@ class ScrumListByTimelineAPIView(generics.ListAPIView):
         timeline_id = self.kwargs['timeline_id']
         return Scrum.objects.filter(timeline_Name_id=timeline_id)
 
+# * ============== Create Task =================
+class TaskCreateView(generics.CreateAPIView):
+    queryset = Task.objects.all()
+    serializer_class = TaskCreationSerializer
 
+class TaskDetailView(generics.RetrieveAPIView):
+    queryset = Task.objects.all()
+    serializer_class = TaskDetailSerializer
+    lookup_field = 'pk'
 
-# Find all the scurms for an timeline 
-@api_view(['GET'])
-def timeline_scrums(request, timeline_id):
-    try:
-        scrums = Scrum.objects.filter(timeline_Name_id=timeline_id)
-        serializer = ScrumSerializer(scrums, many=True)
-        return Response(serializer.data)
-    except Scrum.DoesNotExist:
-        return Response({"message": "Timeline scrums not found"}, status=404)
-    
+class TaskUpdateView(generics.UpdateAPIView):
+    queryset = Task.objects.all()
+    serializer_class = TaskCreationSerializer
+    lookup_field = 'pk'
 
-#* ============ View for creating the task ============ *# 
-class taskViewset(viewsets.ModelViewSet):
-    queryset =  Task.objects.all()
-    serializer_class = TaskSerializer
+class TaskDeleteView(generics.DestroyAPIView):
+    queryset = Task.objects.all()
+    lookup_field = 'pk'
+
+    def delete(self, request, *args, **kwargs):
+        try:
+            instance = self.get_object()
+            self.perform_destroy(instance)
+            return Response({"detail": "Task deleted successfully."}, status=status.HTTP_204_NO_CONTENT)
+        except Task.DoesNotExist:
+            return Response({"detail": "Task not found."}, status=status.HTTP_404_NOT_FOUND)
 
 #Get all task for single scurm 
-@api_view(['GET'])
-def scrum_tasks(request, scrum_id):
-    try:
-        tasks = Task.objects.filter(scrum_Name_id=scrum_id).order_by('-priority')  # Order by priority (high to low)
-        serializer = TaskSerializer(tasks, many=True)
-        return Response(serializer.data)
-    except Task.DoesNotExist:
-        return Response({"message": "Scrum tasks not found"}, status=404)
-    
+class ScrumTasksListView(generics.ListAPIView):
+    serializer_class = TaskDetailSerializer
 
+    def get_queryset(self):
+        scrum_id = self.kwargs['scrum_id']
+        return Task.objects.filter(scrum_Name_id=scrum_id).order_by('-priority')
 
+#* ======================= view for assgin user to task ============ 
+class TaskUpdateAssignedUserView(generics.GenericAPIView):
+    queryset = Task.objects.all()
+    serializer_class = TaskAssignUserSerializer
 
-
-
-
-
+    def put(self, request, *args, **kwargs):
+        task = self.get_object()
+        serializer = TaskAssignUserSerializer(data=request.data)
+        
+        if serializer.is_valid():
+            try:
+                updated_task = serializer.assign_user_to_task(task, serializer.validated_data['email'])
+                response_serializer = TaskDetailSerializer(updated_task)
+                return Response(response_serializer.data, status=status.HTTP_200_OK)
+            except serializers.ValidationError as e:
+                return Response({"detail": str(e)}, status=status.HTTP_403_FORBIDDEN)
+        
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 #* ============ View for creating the taskComment ============ *# 
 class taskCommentViewset(viewsets.ModelViewSet):
