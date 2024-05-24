@@ -44,9 +44,9 @@ urlpatterns = [
     path('tasks/update/<int:pk>/', TaskUpdateView.as_view(), name='task-update'),
     path('tasks/delete/<int:pk>/', TaskDeleteView.as_view(), name='task-delete'),
     path('scrum/tasks/list/<int:scrum_id>/', ScrumTasksListView.as_view(), name='scrum-tasks'),
-    path('tasks/update/assign/<int:pk>/', TaskUpdateAssignedUserView.as_view(), name='task-update-assign'),
+    path('task/update/assign/<int:pk>/', TaskUpdateAssignedUserView.as_view(), name='task-update-assign'),
     path('task/update/priority/<int:pk>', TaskPriorityUpdateView.as_view(), name='task-priority-update'),
-    path('task/update/status/<int:pk>', TaskPriorityUpdateView.as_view(), name='task-priority-update'),
+    path('task/update/status/<int:pk>', TaskStatusUpdateView.as_view(), name='task-priority-update'),
     
     path('taskcomments/<int:task_id>/comments/list/', task_comments, name='task-comments'),
     
