@@ -94,13 +94,16 @@ class Task(models.Model):
     scrum_Name = models.ForeignKey(Scrum, on_delete=models.CASCADE,null=True)
     name = models.CharField(max_length=250)
     details = models.TextField()
-    assign = models.ForeignKey(Member, on_delete=models.CASCADE)
-    status = models.CharField(max_length=100, choices=Task_Status.choices, default=Task_Status.TO_DO)
-    priority = models.CharField(max_length=100, choices=TaskPriority.choices, default=TaskPriority.LOW)
-    which_Type = models.CharField(max_length=100, choices=TaskType.choices, default=TaskType.TASK)
-    task_Value = models.DecimalField(max_digits=5, decimal_places=0)
+    assign = models.ForeignKey(Member, on_delete=models.CASCADE,null=True,blank=True)
+    status = models.CharField(max_length=100, choices=Task_Status.choices, default=Task_Status.TO_DO,null=True,blank=True)
+    priority = models.CharField(max_length=100, choices=TaskPriority.choices, default=TaskPriority.LOW,null=True,blank=True)
+    which_Type = models.CharField(max_length=100, choices=TaskType.choices, default=TaskType.TASK,null=True,blank=True)
+    task_Value = models.DecimalField(max_digits=5, decimal_places=0,null=True,blank=True)
 
     def __str__(self):
+        if self.assign is None:
+            return f"Task Name: {self.name} Task Assgin : Not Assigned"
+        
         return f"Task Name: {self.name} Task Assign to: {self.assign.user}"
 
 
