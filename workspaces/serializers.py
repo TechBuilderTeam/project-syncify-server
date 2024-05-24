@@ -74,8 +74,15 @@ class MemberSerializerForRoleFind(serializers.ModelSerializer):
 class ScrumSerializer(serializers.ModelSerializer):
     class Meta:
         model = Scrum
-        fields = '__all__'
-        
+        fields = ['timeline_Name', 'name', 'details']
+
+class CreateScrumSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Scrum
+        fields = ['timeline_Name', 'name', 'details']
+
+    def create(self, validated_data):
+        return Scrum.objects.create(**validated_data)
 
 # * ================ This Serializer is for the Task ================ * #
 class TaskSerializer(serializers.ModelSerializer):

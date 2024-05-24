@@ -68,7 +68,7 @@ class Scrum(models.Model):
     timeline_Name = models.OneToOneField(Timeline, on_delete=models.CASCADE,null=True)
     name = models.CharField(max_length=250)
     details = models.TextField()
-    members = models.ForeignKey(Member, on_delete=models.CASCADE)
+    members = models.ForeignKey(Member, on_delete=models.CASCADE,blank=True, null=True)
 
     def __str__(self):
         return f"Scrum Name: {self.name}"

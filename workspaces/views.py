@@ -146,10 +146,49 @@ class UserWorkspaces(generics.ListAPIView):
             Q(workSpace_manager_id=user_id) | Q(member__user_id=user_id)
         ).distinct()
 
+
+
+
+
+
+
 #* ============ View for creating the scurm ============ *# 
 class scrumViewset(viewsets.ModelViewSet):
     queryset =  Scrum.objects.all()
     serializer_class = ScrumSerializer
+
+class ScrumCreateAPIView(generics.CreateAPIView):
+    queryset = Scrum.objects.all()
+    serializer_class = CreateScrumSerializer
+
+class ScrumRetrieveAPIView(generics.RetrieveAPIView):
+    queryset = Scrum.objects.all()
+    serializer_class = ScrumSerializer
+
+class ScrumUpdateAPIView(generics.UpdateAPIView):
+    queryset = Scrum.objects.all()
+    serializer_class = ScrumSerializer
+
+class ScrumDeleteAPIView(generics.DestroyAPIView):
+    queryset = Scrum.objects.all()
+    lookup_field = 'pk'
+
+    def destroy(self, request, *args, **kwargs):
+        try:
+            instance = self.get_object()
+            self.perform_destroy(instance)
+            return Response({"detail": "Scrum deleted successfully."}, status=status.HTTP_204_NO_CONTENT)
+        except NotFound:
+            return Response({"detail": "Scrum not found."}, status=status.HTTP_404_NOT_FOUND)
+
+class ScrumListByTimelineAPIView(generics.ListAPIView):
+    serializer_class = ScrumSerializer
+
+    def get_queryset(self):
+        timeline_id = self.kwargs['timeline_id']
+        return Scrum.objects.filter(timeline_Name_id=timeline_id)
+
+
 
 # Find all the scurms for an timeline 
 @api_view(['GET'])
@@ -177,6 +216,14 @@ def scrum_tasks(request, scrum_id):
     except Task.DoesNotExist:
         return Response({"message": "Scrum tasks not found"}, status=404)
     
+
+
+
+
+
+
+
+
 #* ============ View for creating the taskComment ============ *# 
 class taskCommentViewset(viewsets.ModelViewSet):
     queryset =  TaskComment.objects.all()
