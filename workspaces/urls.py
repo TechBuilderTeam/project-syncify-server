@@ -34,10 +34,16 @@ urlpatterns = [
 
 
 # * ================= Scrum URLS ================================
-    path('singletimeline/<int:timeline_id>/scrums/list/', timeline_scrums, name='timeline-scrums'),
+    path('scrum/create/', ScrumCreateAPIView.as_view(), name='create-scrum'),
+    path('scrum/<int:pk>/', ScrumRetrieveAPIView.as_view(), name='retrieve-scrum'),
+    path('scrum/update/<int:pk>/', ScrumUpdateAPIView.as_view(), name='update-scrum'),
+    path('scrum/delete/<int:pk>/', ScrumDeleteAPIView.as_view(), name='delete-scrum'),
+    path('timeline/scrum/<int:timeline_id>/', ScrumListByTimelineAPIView.as_view(), name='scrums-by-timeline'),
+
+# * ================= Task URLS ================================
     path('singlescrum/<int:scrum_id>/tasks/list/', scrum_tasks, name='scrum-tasks'),
-    path('task/<int:pk>/priority/update/', TaskPriorityUpdateView.as_view(), name='task-priority-update'),
-    path('task/<int:pk>/status/update/', TaskPriorityUpdateView.as_view(), name='task-priority-update'),
+    path('task/update/priority/<int:pk>', TaskPriorityUpdateView.as_view(), name='task-priority-update'),
+    path('task/update/status/<int:pk>', TaskPriorityUpdateView.as_view(), name='task-priority-update'),
     
     path('taskcomments/<int:task_id>/comments/list/', task_comments, name='task-comments'),
     
