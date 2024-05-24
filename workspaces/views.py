@@ -279,7 +279,7 @@ class TaskPriorityUpdateView(generics.UpdateAPIView):
 
 
 #* ============== This function for change the task status =====================*#
-class TaskPriorityUpdateView(generics.UpdateAPIView):
+class TaskStatusUpdateView(generics.UpdateAPIView):
     queryset = Task.objects.all()
     serializer_class = TaskSerializerStatus
 
