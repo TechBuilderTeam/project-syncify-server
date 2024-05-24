@@ -8,6 +8,7 @@ from rest_framework import status
 from rest_framework.generics import GenericAPIView
 from rest_framework.response import Response
 from rest_framework.permissions import IsAuthenticated
+from rest_framework.views import APIView
 
 from .serializers import *
 from .utils import send_otp_to_user
@@ -82,10 +83,19 @@ class SetNewPasswordView(GenericAPIView):
 class LogoutView(GenericAPIView):
     serializer_class=LogoutSerializer
     # permission_classes=[IsAuthenticated]
+    def get_queryset(self):
+        return None
     
     def post(self,request):
         serializer=self.serializer_class(data=request.data)
         serializer.is_valid(raise_exception=True)
         serializer.save()
         return Response({"detail": "Successfully logged out"}, status=status.HTTP_200_OK)
+    
+class UserStatusView(APIView):
+    permission_classes = [IsAuthenticated]
+
+    def get(self, request):
+        return Response({"status": "logged_in"}, status=status.HTTP_200_OK)
+    
     
