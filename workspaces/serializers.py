@@ -74,14 +74,61 @@ class MemberSerializerForRoleFind(serializers.ModelSerializer):
 class ScrumSerializer(serializers.ModelSerializer):
     class Meta:
         model = Scrum
-        fields = '__all__'
-        
+        fields = ['timeline_Name', 'name', 'details']
+
+class CreateScrumSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Scrum
+        fields = ['timeline_Name', 'name', 'details']
+
+    def create(self, validated_data):
+        return Scrum.objects.create(**validated_data)
 
 # * ================ This Serializer is for the Task ================ * #
-class TaskSerializer(serializers.ModelSerializer):
+class TaskCreationSerializer(serializers.ModelSerializer):
     class Meta:
         model = Task
-        fields = '__all__'
+        fields = ['scrum_Name', 'name', 'details', 'assign']
+        read_only_fields = ['status', 'priority', 'which_Type', 'task_Value']
+
+    def create(self, validated_data):
+        validated_data['status'] = Task_Status.TO_DO
+        validated_data['priority'] = TaskPriority.LOW
+        validated_data['which_Type'] = TaskType.TASK
+        validated_data['task_Value'] = None
+        return super().create(validated_data)
+
+class TaskDetailSerializer(serializers.ModelSerializer):
+    assign = AssignedUserSerializer(read_only=True)
+
+    class Meta:
+        model = Task
+        fields = ['id', 'scrum_Name', 'name', 'details', 'assign', 'status', 'priority', 'which_Type', 'task_Value']
+
+
+# * ================ This Serializer is for the Task assign ================ * #
+class TaskAssignUserSerializer(serializers.Serializer):
+    email = serializers.EmailField()
+
+    def validate_email(self, value):
+        try:
+            user = User.objects.get(email=value)
+        except User.DoesNotExist:
+            raise serializers.ValidationError("User does not exist.")
+        return value
+
+    def assign_user_to_task(self, task, email):
+        user = User.objects.get(email=email)
+        workspace = task.scrum_Name.timeline_Name.workspace_Name
+        
+        try:
+            member = Member.objects.get(user=user, workspace_Name=workspace)
+        except Member.DoesNotExist:
+            raise serializers.ValidationError("User is not a member of this workspace.")
+        
+        task.assign = member
+        task.save()
+        return task
 
 # * ================ This Serializer is for the Task ================ * #
 class TaskSerializerPriority(serializers.ModelSerializer):
