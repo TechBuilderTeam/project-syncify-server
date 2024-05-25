@@ -155,7 +155,7 @@ class LogoutSerializer(serializers.Serializer):
             else:
                 print('token not found')
             print(token)
-            # token.blacklist()
+            token.blacklist()
         except Exception as e:
             raise serializers.ValidationError("Failed to blacklist token")
         
