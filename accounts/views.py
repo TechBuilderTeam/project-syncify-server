@@ -82,7 +82,6 @@ class SetNewPasswordView(GenericAPIView):
 
 class LogoutView(GenericAPIView):
     serializer_class=LogoutSerializer
-    # permission_classes=[IsAuthenticated]
     def get_queryset(self):
         return None
     
