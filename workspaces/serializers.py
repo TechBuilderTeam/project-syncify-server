@@ -53,7 +53,11 @@ class TimelineDetailSerializer(serializers.ModelSerializer):
             return remaining_days if remaining_days >= 0 else 0
         return None
 
-
+class TimelineStatusSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Timeline
+        fields = ['status']
+        
 # * ================ This Serializer is for the Member Search ================ * #
 class MemberSerializer(serializers.ModelSerializer):
     user = UserRegisterSerializer
