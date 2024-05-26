@@ -28,8 +28,8 @@ urlpatterns = [
     path('timelines/<int:pk>/', TimelineDetailView.as_view(), name='timeline-detail'),
     path('timelines/update/<int:pk>/', TimelineUpdateView.as_view(), name='timeline-update'),
     path('timelines/delete/<int:pk>/', TimelineDeleteView.as_view(), name='timeline-delete'),
+    path('timeline/update/status/<int:pk>/', UpdateTimelineStatusView.as_view(), name='update-timeline-status'),
     path('singleworkspace/<int:workspace_id>/timelines/list/', WorkspaceTimelinesList.as_view(), name='workspace-timelines'),
-
 
 # * ================= Scrum URLS ================================
     path('scrum/create/', ScrumCreateAPIView.as_view(), name='create-scrum'),
@@ -45,8 +45,8 @@ urlpatterns = [
     path('tasks/delete/<int:pk>/', TaskDeleteView.as_view(), name='task-delete'),
     path('scrum/tasks/list/<int:scrum_id>/', ScrumTasksListView.as_view(), name='scrum-tasks'),
     path('task/update/assign/<int:pk>/', TaskUpdateAssignedUserView.as_view(), name='task-update-assign'),
-    path('task/update/priority/<int:pk>', TaskPriorityUpdateView.as_view(), name='task-priority-update'),
-    path('task/update/status/<int:pk>', TaskStatusUpdateView.as_view(), name='task-priority-update'),
+    path('task/update/priority/<int:pk>/', TaskPriorityUpdateView.as_view(), name='task-priority-update'),
+    path('task/update/status/<int:pk>/', TaskStatusUpdateView.as_view(), name='task-priority-update'),
     
     path('taskcomments/<int:task_id>/comments/list/', task_comments, name='task-comments'),
     

@@ -88,6 +88,14 @@ class TimelineDeleteView(generics.DestroyAPIView):
         except NotFound:
             return Response({"detail": "Timeline not found."}, status=status.HTTP_404_NOT_FOUND)
 
+
+# * ============ View to Change the timeline staus    ================
+class UpdateTimelineStatusView(generics.UpdateAPIView):
+    queryset = Timeline.objects.all()
+    serializer_class = TimelineStatusSerializer
+
+
+
 # * ============ View to handle Get all Timeline for a single workspace ================
 class WorkspaceTimelinesList(generics.ListAPIView):
     serializer_class = TimelineDetailSerializer
