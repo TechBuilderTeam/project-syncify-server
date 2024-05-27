@@ -140,29 +140,39 @@ class TaskDetailSerializer(serializers.ModelSerializer):
 
 
 # * ================ This Serializer is for the Task assign ================ * #
-class TaskAssignUserSerializer(serializers.Serializer):
-    email = serializers.EmailField()
+class TaskAssignSerializer(serializers.ModelSerializer):
+    email = serializers.EmailField(write_only=True)
+
+    class Meta: 
+        model = Task
+        fields = ['email']
 
     def validate_email(self, value):
+        # Check if user exists with this email
         try:
             user = User.objects.get(email=value)
         except User.DoesNotExist:
-            raise serializers.ValidationError("User does not exist.")
-        return value
-
-    def assign_user_to_task(self, task, email):
-        user = User.objects.get(email=email)
-        workspace = task.scrum_Name.timeline_Name.workspace_Name
+            raise serializers.ValidationError("No user found with this email address.")
         
+        # Check if the user is a member of the workspace related to the Task instance's Scrum's Timeline's Workspace
+        task = self.instance
+        if not task.scrum_Name.timeline_Name.workspace_Name:
+            raise serializers.ValidationError("Task does not have an associated workspace.")
+        
+        workspace = task.scrum_Name.timeline_Name.workspace_Name
         try:
             member = Member.objects.get(user=user, workspace_Name=workspace)
         except Member.DoesNotExist:
-            raise serializers.ValidationError("User is not a member of this workspace.")
+            raise serializers.ValidationError("User is not a member of the workspace.")
         
-        task.assign = member
-        task.save()
-        return task
+        return {'user': user, 'member': member}
 
+    def update(self, instance, validated_data):
+        member = validated_data['email']['member']
+        instance.assign = member
+        instance.save()
+        return instance
+    
 # * ================ This Serializer is for the Task ================ * #
 class TaskSerializerPriority(serializers.ModelSerializer):
     class Meta:
