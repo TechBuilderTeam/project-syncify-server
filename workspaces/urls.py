@@ -28,7 +28,8 @@ urlpatterns = [
     path('timelines/<int:pk>/', TimelineDetailView.as_view(), name='timeline-detail'),
     path('timelines/update/<int:pk>/', TimelineUpdateView.as_view(), name='timeline-update'),
     path('timelines/delete/<int:pk>/', TimelineDeleteView.as_view(), name='timeline-delete'),
-    path('timeline/update/status/<int:pk>/', UpdateTimelineStatusView.as_view(), name='update-timeline-status'),
+    path('timelines/update/status/<int:pk>/', UpdateTimelineStatusView.as_view(), name='update-timeline-status'),
+    path('timelines/update/assign/<int:pk>/', TimelineAssignUpdate.as_view(), name='update-timeline-assign'),
     path('singleworkspace/<int:workspace_id>/timelines/list/', WorkspaceTimelinesList.as_view(), name='workspace-timelines'),
 
 # * ================= Scrum URLS ================================

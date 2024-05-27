@@ -128,8 +128,25 @@ class WorkspaceTimelinesList(generics.ListAPIView):
         }
 
         return Response(response_data)
-    
 
+
+class TimelineAssignUpdate(generics.UpdateAPIView):
+    queryset = Timeline.objects.all()
+    serializer_class = TimelineAssignSerializer
+
+    def update(self, request, *args, **kwargs):
+        partial = kwargs.pop('partial', False)
+        instance = self.get_object()
+        serializer = self.get_serializer(instance, data=request.data, partial=partial)
+        serializer.is_valid(raise_exception=True)
+        self.perform_update(serializer)
+
+        return Response(
+            {
+                "message": "Member successfully assigned to the timeline.",
+            },
+            status=status.HTTP_200_OK
+        )
 #* ============ View to check if a user is a member of a specific workspace ============ *# 
 class IsUserMember(APIView):
 
