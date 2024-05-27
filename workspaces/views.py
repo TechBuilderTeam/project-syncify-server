@@ -257,7 +257,7 @@ class TaskUpdateAssignedUserView(generics.UpdateAPIView):
                 "message": "Member successfully assigned to the task.",
             },
             status=status.HTTP_200_OK
-        )
+        ) 
 #* ============ View for creating the taskComment ============ *# 
 class taskCommentViewset(viewsets.ModelViewSet):
     queryset =  TaskComment.objects.all()
