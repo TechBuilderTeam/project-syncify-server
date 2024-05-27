@@ -241,24 +241,23 @@ class ScrumTasksListView(generics.ListAPIView):
         return Task.objects.filter(scrum_Name_id=scrum_id).order_by('-priority')
 
 #* ======================= view for assgin user to task ============ 
-class TaskUpdateAssignedUserView(generics.GenericAPIView):
+class TaskUpdateAssignedUserView(generics.UpdateAPIView):
     queryset = Task.objects.all()
-    serializer_class = TaskAssignUserSerializer
+    serializer_class = TaskAssignSerializer
 
-    def put(self, request, *args, **kwargs):
-        task = self.get_object()
-        serializer = TaskAssignUserSerializer(data=request.data)
-        
-        if serializer.is_valid():
-            try:
-                updated_task = serializer.assign_user_to_task(task, serializer.validated_data['email'])
-                response_serializer = TaskDetailSerializer(updated_task)
-                return Response(response_serializer.data, status=status.HTTP_200_OK)
-            except serializers.ValidationError as e:
-                return Response({"detail": str(e)}, status=status.HTTP_403_FORBIDDEN)
-        
-        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+    def update(self, request, *args, **kwargs):
+        partial = kwargs.pop('partial', False)
+        instance = self.get_object()
+        serializer = self.get_serializer(instance, data=request.data, partial=partial)
+        serializer.is_valid(raise_exception=True)
+        self.perform_update(serializer)
 
+        return Response(
+            {
+                "message": "Member successfully assigned to the task.",
+            },
+            status=status.HTTP_200_OK
+        ) 
 #* ============ View for creating the taskComment ============ *# 
 class taskCommentViewset(viewsets.ModelViewSet):
     queryset =  TaskComment.objects.all()
