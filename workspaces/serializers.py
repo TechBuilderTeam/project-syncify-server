@@ -57,7 +57,36 @@ class TimelineStatusSerializer(serializers.ModelSerializer):
     class Meta:
         model = Timeline
         fields = ['status']
+
+class TimelineAssignSerializer(serializers.ModelSerializer):
+    email = serializers.EmailField(write_only=True)
+
+    class Meta: 
+        model = Timeline
+        fields = ['email']
+
+    def validate_email(self, value):
+        # Check if user exists with this email
+        try:
+            user = User.objects.get(email=value)
+        except User.DoesNotExist:
+            raise serializers.ValidationError("No user found with this email address.")
         
+        # Check if the user is a member of the workspace related to the Timeline instance
+        timeline = self.instance
+        try:
+            member = Member.objects.get(user=user, workspace_Name=timeline.workspace_Name)
+        except Member.DoesNotExist:
+            raise serializers.ValidationError("User is not a member of the workspace.")
+        
+        return {'user': user, 'member': member}
+
+    def update(self, instance, validated_data):
+        member = validated_data['email']['member']
+        instance.assign = member
+        instance.save()
+        return instance
+       
 # * ================ This Serializer is for the Member Search ================ * #
 class MemberSerializer(serializers.ModelSerializer):
     user = UserRegisterSerializer

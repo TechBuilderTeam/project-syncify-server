@@ -88,14 +88,6 @@ DATABASES = {
 }
 
 
-# # Replace the SQLite DATABASES configuration with PostgreSQL:
-# DATABASES = {
-#     'default': dj_database_url.config(
-#         # Replace this value with your local database's connection string.
-#         default='postgres://projectsyncify789:2Ktn7kGV7O2dEAXY567m08PEAwzNVHbu@dpg-cp89s1n109ks738hivm0-a.singapore-postgres.render.com/project_syncify_database',
-#     )
-# }
-
 AUTH_USER_MODEL='accounts.User'
 REST_FRAMEWORK = {
     'DEFAULT_AUTHENTICATION_CLASSES': (
