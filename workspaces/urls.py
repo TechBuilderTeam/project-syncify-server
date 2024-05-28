@@ -55,7 +55,8 @@ urlpatterns = [
     path('comments/delete/<int:pk>/', TaskCommentDeleteView.as_view(), name='comment-delete'),
     path('singletask/comments/list/<int:task_id>/', task_comments, name='task-comments'),
     
-    
+# * ====================== important urls ==================== 
+    path('counts/', count_view, name='counts'),
 ]
 
 
