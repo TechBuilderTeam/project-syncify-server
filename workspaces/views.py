@@ -11,6 +11,7 @@ from rest_framework.decorators import action
 from django.db.models import Avg, Max, Min
 from rest_framework.exceptions import NotFound
 from rest_framework import filters
+from django.http import JsonResponse
 
 #* ============ There will be All the Functions of the WorkSpace   ============ *# 
 
@@ -354,3 +355,29 @@ class TaskStatusUpdateView(generics.UpdateAPIView):
             instance._prefetched_objects_cache = {}
 
         return Response(serializer.data, status=status.HTTP_200_OK)
+
+
+
+        # * ================== Get All Counts ================= 
+def get_counts():
+    workspace_count = WorkSpace.objects.count()
+    timeline_count = Timeline.objects.count()
+    task_count = Task.objects.count()
+    member_count = Member.objects.count()
+    scrum_count = Scrum.objects.count()
+    task_comment_count = TaskComment.objects.count()
+    
+    counts = {
+        "workspaces": workspace_count,
+        "timelines": timeline_count,
+        "tasks": task_count,
+        "members": member_count,
+        "scrums": scrum_count,
+        "task_comments": task_comment_count,
+    }
+    
+    return counts
+
+def count_view(request):
+    counts = get_counts()
+    return JsonResponse(counts)
