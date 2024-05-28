@@ -233,3 +233,26 @@ class WorkspaceInfoSerializer(serializers.Serializer):
             'timeline_progress': timeline_progress,
             'task_progress': task_progress
         }
+    
+
+
+class MemberDetailsSerializer(serializers.ModelSerializer):
+    user_name = serializers.CharField(source='user.get_full_name', read_only=True)
+    user_email = serializers.EmailField(source='user.email', read_only=True)
+
+    class Meta:
+        model = Member
+        fields = ['user_name', 'user_email', 'role']
+        
+class WorkspaceDetailsSerializer(serializers.ModelSerializer):
+    workspace_manager_name = serializers.CharField(source='workSpace_manager.get_full_name', read_only=True)
+    workspace_manager_email = serializers.EmailField(source='workSpace_manager.email', read_only=True)
+    workspace_total_members = serializers.SerializerMethodField()
+    members = MemberDetailsSerializer(source='member_set', many=True, read_only=True)
+
+    class Meta:
+        model = WorkSpace
+        fields = ['name', 'workspace_manager_name', 'workspace_manager_email', 'workspace_total_members','members','created_at','updated_at']
+
+    def get_workspace_total_members(self, obj):
+        return Member.objects.filter(workspace_Name=obj).count()
