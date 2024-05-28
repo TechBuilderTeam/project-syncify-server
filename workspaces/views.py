@@ -171,7 +171,7 @@ class IsUserMember(APIView):
 
 #* ============ View to list all workspaces associated with a user ============ *# 
 class UserWorkspaces(generics.ListAPIView):
-    serializer_class = WorkspaceDetailsSerializer
+    serializer_class = WorkspaceDetailsForMembers
 
     def get_queryset(self):
         user_id = self.kwargs['user_id']
