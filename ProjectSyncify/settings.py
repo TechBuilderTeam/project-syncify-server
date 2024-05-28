@@ -19,7 +19,7 @@ SECRET_KEY = 'django-insecure-fuhz)@l)976_$+z7moq825_w#4_@dpm4y-sw3wlw3+t2z9xify
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = []
+# ALLOWED_HOSTS = []
 
 
 # Application definition
@@ -31,6 +31,7 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+    'django_filters',
     'accounts',
     'rest_framework',
     'corsheaders',
@@ -86,13 +87,25 @@ DATABASES = {
         'NAME': BASE_DIR / 'db.sqlite3',
     }
 }
-
+# DATABASES = {
+#     'default': {
+#         'ENGINE': 'django.db.backends.mysql',
+#         'NAME': 'sifathislam790$default',  # Your database name
+#         'USER': 'sifathislam790',           # Your database username
+#         'PASSWORD': 'sifath2002',           # Your database password
+#         'HOST': 'sifathislam790.mysql.pythonanywhere-services.com',  # Your database host
+#         'PORT': '3306',                     # The default MySQL port
+#     }
+# }
 
 AUTH_USER_MODEL='accounts.User'
 REST_FRAMEWORK = {
     'DEFAULT_AUTHENTICATION_CLASSES': (
         'rest_framework_simplejwt.authentication.JWTAuthentication',
     ),
+    'DEFAULT_FILTER_BACKENDS': [
+        'django_filters.rest_framework.DjangoFilterBackend',
+    ],
 }
 SIMPLE_JWT = {
     "ACCESS_TOKEN_LIFETIME": timedelta(days=360),

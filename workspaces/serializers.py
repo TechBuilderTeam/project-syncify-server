@@ -52,7 +52,7 @@ class TimelineDetailSerializer(serializers.ModelSerializer):
             remaining_days = (obj.end_Date - date.today()).days
             return remaining_days if remaining_days >= 0 else 0
         return None
-
+    
 class TimelineStatusSerializer(serializers.ModelSerializer):
     class Meta:
         model = Timeline

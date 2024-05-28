@@ -10,6 +10,7 @@ from rest_framework.views import APIView
 from rest_framework.decorators import action
 from django.db.models import Avg, Max, Min
 from rest_framework.exceptions import NotFound
+from rest_framework import filters
 
 #* ============ There will be All the Functions of the WorkSpace   ============ *# 
 
@@ -97,27 +98,36 @@ class UpdateTimelineStatusView(generics.UpdateAPIView):
 
 
 # * ============ View to handle Get all Timeline for a single workspace ================
+
+class TimelineStatusFilter(filters.BaseFilterBackend):
+    def filter_queryset(self, request, queryset, view):
+        status = request.query_params.get('status')
+        if status:
+            return queryset.filter(status=status)
+        return queryset
+
 class WorkspaceTimelinesList(generics.ListAPIView):
     serializer_class = TimelineDetailSerializer
+    filter_backends = (TimelineStatusFilter,)
 
     def get_queryset(self):
         workspace_id = self.kwargs['workspace_id']
         return Timeline.objects.filter(workspace_Name_id=workspace_id)
 
     def list(self, request, *args, **kwargs):
-        queryset = self.get_queryset()
+        queryset = self.filter_queryset(self.get_queryset())  # Apply filters
         serializer = self.get_serializer(queryset, many=True)
-        
+
         max_duration = queryset.aggregate(Max('duration'))['duration__max']
         min_duration = queryset.aggregate(Min('duration'))['duration__min']
         avg_duration = queryset.aggregate(Avg('duration'))['duration__avg']
 
         # Find the timeline with the longest duration
+        max_duration_timeline_name = None
         if max_duration is not None:
             max_duration_timeline = queryset.filter(duration=max_duration).first()
-            max_duration_timeline_name = max_duration_timeline.name if max_duration_timeline else None
-        else:
-            max_duration_timeline_name = None
+            if max_duration_timeline:
+                max_duration_timeline_name = max_duration_timeline.name
 
         response_data = {
             'max_duration_timeline_name': max_duration_timeline_name,
@@ -128,8 +138,7 @@ class WorkspaceTimelinesList(generics.ListAPIView):
         }
 
         return Response(response_data)
-
-
+    
 class TimelineAssignUpdate(generics.UpdateAPIView):
     queryset = Timeline.objects.all()
     serializer_class = TimelineAssignSerializer
