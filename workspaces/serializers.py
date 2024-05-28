@@ -252,7 +252,7 @@ class WorkspaceDetailsForMembers(serializers.ModelSerializer):
 
     class Meta:
         model = WorkSpace
-        fields = ['name', 'workspace_manager_name', 'workspace_manager_email', 'workspace_total_members','members','created_at','updated_at']
+        fields = ['id','name', 'workspace_manager_name', 'workspace_manager_email', 'workspace_total_members','members','created_at','updated_at']
 
     def get_workspace_total_members(self, obj):
         return Member.objects.filter(workspace_Name=obj).count()
