@@ -198,3 +198,38 @@ class TaskCommentDetailSerializer(serializers.ModelSerializer):
     class Meta:
         model = TaskComment
         fields = ['id', 'task_Name', 'comment', 'created', 'commenter']
+
+# * ================ This Serializer is for the Extra ================ * #
+
+class WorkspaceInfoSerializer(serializers.Serializer):
+    workspace = WorkSpaceSerializer()
+    total_timelines = serializers.IntegerField()
+    total_tasks = serializers.IntegerField()
+    done_timelines = serializers.IntegerField()
+    todo_timelines = serializers.IntegerField()
+    in_progress_timelines = serializers.IntegerField()
+    done_tasks = serializers.IntegerField()
+    todo_tasks = serializers.IntegerField()
+    in_progress_tasks = serializers.IntegerField()
+    progress_percentage = serializers.SerializerMethodField()
+
+    def get_progress_percentage(self, obj):
+        total_timelines = obj['total_timelines']
+        total_tasks = obj['total_tasks']
+        done_timelines = obj['done_timelines']
+        done_tasks = obj['done_tasks']
+
+        if total_timelines == 0:
+            timeline_progress = 0
+        else:
+            timeline_progress = (done_timelines / total_timelines) * 100
+
+        if total_tasks == 0:
+            task_progress = 0
+        else:
+            task_progress = (done_tasks / total_tasks) * 100
+
+        return {
+            'timeline_progress': timeline_progress,
+            'task_progress': task_progress
+        }

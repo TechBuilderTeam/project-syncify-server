@@ -381,3 +381,37 @@ def get_counts():
 def count_view(request):
     counts = get_counts()
     return JsonResponse(counts)
+
+
+class WorkspaceInfoAPIView(APIView):
+    def get(self, request, workspace_id):
+        try:
+            workspace = WorkSpace.objects.get(pk=workspace_id)
+        except WorkSpace.DoesNotExist:
+            return Response(status=status.HTTP_404_NOT_FOUND)
+
+        total_timelines = Timeline.objects.filter(workspace_Name=workspace).count()
+        total_tasks = Task.objects.filter(scrum_Name__timeline_Name__workspace_Name=workspace).count()
+
+        done_timelines = Timeline.objects.filter(workspace_Name=workspace, status='Done').count()
+        todo_timelines = Timeline.objects.filter(workspace_Name=workspace, status='To Do').count()
+        in_progress_timelines = Timeline.objects.filter(workspace_Name=workspace, status='In Progress').count()
+
+        done_tasks = Task.objects.filter(scrum_Name__timeline_Name__workspace_Name=workspace, status='Done').count()
+        todo_tasks = Task.objects.filter(scrum_Name__timeline_Name__workspace_Name=workspace, status='To Do').count()
+        in_progress_tasks = Task.objects.filter(scrum_Name__timeline_Name__workspace_Name=workspace, status='In Progress').count()
+
+        data = {
+            'workspace': workspace,
+            'total_timelines': total_timelines,
+            'total_tasks': total_tasks,
+            'done_timelines': done_timelines,
+            'todo_timelines': todo_timelines,
+            'in_progress_timelines': in_progress_timelines,
+            'done_tasks': done_tasks,
+            'todo_tasks': todo_tasks,
+            'in_progress_tasks': in_progress_tasks,
+        }
+
+        serializer = WorkspaceInfoSerializer(data)
+        return Response(serializer.data)
