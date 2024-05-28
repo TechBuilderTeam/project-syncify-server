@@ -113,8 +113,8 @@ class Task(models.Model):
 class TaskComment(models.Model):
     task_Name = models.ForeignKey(Task, on_delete=models.CASCADE,null=True)
     comment = models.TextField()
-    created = models.DateTimeField(auto_now=False, auto_now_add=False)
-    commernter = models.ForeignKey(Member, on_delete=models.CASCADE, null=True)
+    created = models.DateTimeField(auto_now=True)
+    commenter = models.ForeignKey(Member, on_delete=models.CASCADE, null=True)
 
     def __str__(self):
         return f"Commenter Name: {self.commernter.user}"

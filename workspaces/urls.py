@@ -8,7 +8,6 @@ router = routers.DefaultRouter()
 
 router.register('list' , workSpaceViewSet)
 router.register('member' , MemberViewSet)
-router.register('create/taskcomments' , taskCommentViewset)
 
 urlpatterns = [
     path('', include(router.urls)),
@@ -49,7 +48,12 @@ urlpatterns = [
     path('task/update/priority/<int:pk>/', TaskPriorityUpdateView.as_view(), name='task-priority-update'),
     path('task/update/status/<int:pk>/', TaskStatusUpdateView.as_view(), name='task-priority-update'),
     
-    path('taskcomments/<int:task_id>/comments/list/', task_comments, name='task-comments'),
+# * ================= Task Comments URLS ================================
+    path('comments/create/', TaskCommentCreateView.as_view(), name='comment-create'),
+    path('comments/<int:pk>/', TaskCommentDetailView.as_view(), name='comment-detail'),
+    path('comments/update/<int:pk>/', TaskCommentUpdateView.as_view(), name='comment-update'),
+    path('comments/delete/<int:pk>/', TaskCommentDeleteView.as_view(), name='comment-delete'),
+    path('singletask/comments/list/<int:task_id>/', task_comments, name='task-comments'),
     
     
 ]
