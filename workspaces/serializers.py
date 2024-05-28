@@ -244,7 +244,7 @@ class MemberDetailsSerializer(serializers.ModelSerializer):
         model = Member
         fields = ['user_name', 'user_email', 'role']
         
-class WorkspaceDetailsSerializer(serializers.ModelSerializer):
+class WorkspaceDetailsForMembers(serializers.ModelSerializer):
     workspace_manager_name = serializers.CharField(source='workSpace_manager.get_full_name', read_only=True)
     workspace_manager_email = serializers.EmailField(source='workSpace_manager.email', read_only=True)
     workspace_total_members = serializers.SerializerMethodField()
