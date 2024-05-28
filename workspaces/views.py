@@ -267,10 +267,37 @@ class TaskUpdateAssignedUserView(generics.UpdateAPIView):
             },
             status=status.HTTP_200_OK
         ) 
-#* ============ View for creating the taskComment ============ *# 
-class taskCommentViewset(viewsets.ModelViewSet):
-    queryset =  TaskComment.objects.all()
-    serializer_class = TaskCommentSerializer
+
+# * ============== Create Task Comment =================
+class TaskCommentCreateView(generics.CreateAPIView):
+    queryset = TaskComment.objects.all()
+    serializer_class = TaskCommentCreationSerializer
+
+# * ============== Retrieve Task Comment =================
+class TaskCommentDetailView(generics.RetrieveAPIView):
+    queryset = TaskComment.objects.all()
+    serializer_class = TaskCommentDetailSerializer
+    lookup_field = 'pk'
+
+# * ============== Update Task Comment =================
+class TaskCommentUpdateView(generics.UpdateAPIView):
+    queryset = TaskComment.objects.all()
+    serializer_class = TaskCommentCreationSerializer
+    lookup_field = 'pk'
+
+# * ============== Delete Task Comment =================
+class TaskCommentDeleteView(generics.DestroyAPIView):
+    queryset = TaskComment.objects.all()
+    lookup_field = 'pk'
+
+    def delete(self, request, *args, **kwargs):
+        try:
+            instance = self.get_object()
+            self.perform_destroy(instance)
+            return Response({"detail": "Task comment deleted successfully."}, status=status.HTTP_204_NO_CONTENT)
+        except TaskComment.DoesNotExist:
+            return Response({"detail": "Task comment not found."}, status=status.HTTP_404_NOT_FOUND)
+
 
 
 #Get all commments for task 
@@ -278,7 +305,7 @@ class taskCommentViewset(viewsets.ModelViewSet):
 def task_comments(request, task_id):
     try:
         comments = TaskComment.objects.filter(task_Name_id=task_id)
-        serializer = TaskCommentSerializer(comments, many=True)
+        serializer = TaskCommentDetailSerializer(comments, many=True)
         return Response(serializer.data)
     except TaskComment.DoesNotExist:
         return Response({"message": "Task comments not found"}, status=404)

@@ -188,7 +188,13 @@ class TaskSerializerStatus(serializers.ModelSerializer):
 
 
 # * ================ This Serializer is for the Task ================ * #
-class TaskCommentSerializer(serializers.ModelSerializer):
+class TaskCommentCreationSerializer(serializers.ModelSerializer):
     class Meta:
         model = TaskComment
-        fields = '__all__'
+        fields = ['task_Name', 'comment','commenter']
+
+class TaskCommentDetailSerializer(serializers.ModelSerializer):
+    commenter = AssignedUserSerializer(read_only=True)
+    class Meta:
+        model = TaskComment
+        fields = ['id', 'task_Name', 'comment', 'created', 'commenter']
